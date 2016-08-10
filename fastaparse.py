@@ -6,10 +6,10 @@ def get_name(header):
     returns
     gi|3641541|gb|AF073518.1|
     '''
-    return
+    return header.split(' ',1)[0][1:]
 
 
-def fasta_parser(pFile):
+def fasta_parser(data):
     '''
     Generator, reads from opened fasta file and yields dictionaries
     with the following fields.
@@ -20,8 +20,23 @@ def fasta_parser(pFile):
     Lines starting with ; are comments, which should be skipped.
     For more help, see hints file.
     '''
-    yield
-
-
-            
-            
+    first_check = True
+    gene = {}
+    seq = ''
+    for line in data:
+        if line[0] == ';':
+            continue
+        elif line[0] == '>':
+            if first_check:
+                gene['name'] = get_name(line)
+                first_check = False
+                continue
+            else:
+                gene['seq'] = seq
+                yield gene
+                seq = ''
+            gene['name'] = get_name(line)
+        else:
+            seq += line.strip("\n")
+    gene['seq'] = seq
+    yield gene

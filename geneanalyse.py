@@ -9,7 +9,15 @@ def GC_skew (gene):
     the following equation (G-C)/(G+C), make sure to return as a
     float!
     '''
-    return
+    C = 0.0
+    G = 0.0
+    for i in gene:
+        if i == 'C':
+            C += 1.0
+        elif i == 'G':
+            G += 1.0
+
+    return(G-C)/(G+C)
 
 def has_motif (gene, motif):
     '''
@@ -18,7 +26,11 @@ def has_motif (gene, motif):
     True or False value dependant on whether a given motif string
     is found within the gene sequence.
     '''
-    return
+    if motif in gene:
+        test = True
+    else:
+        test = False
+    return test
 
 def analyse_gene (gene):
     '''
@@ -29,7 +41,15 @@ def analyse_gene (gene):
     'ecor1' -> boolean for the presence of the motif "GAATTC"
     'cat_box' -> boolean for the presence of the motif "GGCCAATCT"
     '''
-    return
+
+    gene_analysis = {}
+
+    gene_analysis['gc_skew'] = GC_skew(gene['seq'])
+    gene_analysis['tata_box'] = has_motif(gene['seq'],'TATAAA')
+    gene_analysis['ecor1'] = has_motif(gene['seq'], 'GAATTC')
+    gene_analysis['cat_box'] = has_motif(gene['seq'], 'GGCCAATCT')
+
+    return gene_analysis
 
 def read_genes (fastafile):
     '''
@@ -37,4 +57,11 @@ def read_genes (fastafile):
     specified opened file, analyse them and then return a list of
     analysed gene dictionaries.
     '''
-    return 
+
+    my_parser = fastaparse.fasta_parser(fastafile)
+
+    genes = []
+
+    for protein in my_parser:
+        genes.append(analyse_gene(protein))
+    return genes
